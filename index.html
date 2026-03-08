@@ -45,17 +45,17 @@
     .flower {
       position: absolute;
       top: -30vh;
-      font-size: clamp(2rem, 8vw, 4rem);
+      font-size: clamp(2.2rem, 9vw, 4.5rem);
       animation: fall linear infinite forwards;
       opacity: 0;
-      font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     }
 
     .card {
       background: rgba(255,254,252,0.94);
       backdrop-filter: blur(16px);
       border-radius: 28px;
-      padding: clamp(30px, 8vw, 50px) clamp(20px, 6vw, 40px);
+      padding: clamp(28px, 7vw, 45px) clamp(18px, 5vw, 35px);
       margin: 10px;
       box-shadow: 0 20px 60px #be5a821e, inset 0 0 30px #fff0f54c;
       border: 1px solid #ffd2e180;
@@ -83,28 +83,128 @@
       color: #b51d5e;
     }
 
-    .heart {
-      font-size: clamp(4.5rem, 18vw, 7rem);
-      cursor: pointer;
-      margin: 2em 0 1.5em;
-      transition: transform 0.3s;
-      user-select: none;
+    .heart-container {
+      font-size: clamp(5rem, 20vw, 8rem);
+      margin: 1.5em 0 1em;
+      animation: pulseHeart 3.2s infinite ease-in-out;
+      color: #c2185b;
+      text-shadow: 0 0 20px rgba(194,24,91,0.4);
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
     }
 
-    .heart:active {
-      transform: scale(1.6) rotate(12deg);
+    @keyframes pulseHeart {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.15); }
     }
 
     @keyframes fall {
-      to { transform: translateY(180vh) rotate(2000deg); opacity: 0; }
+      to { transform: translateY(180vh) rotate(2200deg); opacity: 0; }
       5% { opacity: 0.92; }
     }
 
     @media (min-width: 601px) {
-      .heart:hover {
-        transform: scale(1.4) rotate(10deg);
-        filter: drop-shadow(0 0 25px #ff69b4);
+      .heart-container {
+        animation: pulseHeart 4s infinite ease-in-out;
       }
+    }
+  </style>
+</head>
+<body>
+
+<div class="flowers" id="flowers"></div>
+
+<div class="lock" id="lock">
+  <div>Открывается в 13:00</div>
+  <div id="countdown" style="margin:1.2em 0; font-size: clamp(1.6rem, 6vw, 2.1rem);"></div>
+  <div style="font-size: clamp(1.1rem, 4vw, 1.3rem); opacity:0.95;">
+    Сейчас <span id="time">--:--</span>
+  </div>
+</div>
+
+<div id="main" style="display:none; width:100%; padding:10px;">
+  <div class="card">
+    <h1>Мамочка, с 8 Марта! 🌸</h1>
+    <div class="poem">
+      Ты — мой первый свет в этом мире,<br>
+      тёплые руки, когда мне страшно,<br>
+      тихая песня в бессонные ночи,<br>
+      и сила, которой во мне так много.<br><br>
+
+      Спасибо, что сердце моё — от твоего,<br>
+      что в каждом моём «я люблю» — твоё эхо.<br>
+      Будь счастлива, мам, каждый день и всегда,<br>
+      <strong>ты — моё самое лучшее чудо навек</strong> ♡
+    </div>
+    <div class="heart-container" id="heart">💜</div>
+  </div>
+</div>
+
+<script>
+const OPEN_H = 13;
+const OPEN_M = 0;
+
+const FLOWERS = [
+  "&#x1F338;","&#x1F337;","&#x1F33A;","&#x1F490;","&#x1F339;",
+  "&#x1F4AE;","&#x1F3F5;","&#x1F33B;","&#x1F33C;","&#x1FAB7;","&#x1F49D;"
+];
+
+function spawnFlower() {
+  const el = document.createElement("div");
+  el.className = "flower";
+  el.innerHTML = FLOWERS[Math.floor(Math.random() * FLOWERS.length)];
+  el.style.left = Math.random() * 100 + "vw";
+  el.style.animationDuration = (12 + Math.random() * 14) + "s";
+  el.style.animationDelay = Math.random() * 5 + "s";
+  document.getElementById("flowers").appendChild(el);
+  setTimeout(() => el.remove(), 45000);
+}
+
+setInterval(spawnFlower, 800); // ещё чуть реже для экономии батареи
+
+function checkTime() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+
+  document.getElementById("time").textContent = h + ':' + m;
+
+  const target = new Date(now);
+  target.setHours(OPEN_H, OPEN_M, 0, 0);
+
+  const diff = target - now;
+  if (diff <= 0) {
+    document.getElementById("lock").classList.add("hidden");
+    document.getElementById("main").style.display = "block";
+    return;
+  }
+
+  let sec = Math.floor(diff / 1000);
+  const hh = Math.floor(sec / 3600); sec %= 3600;
+  const mm = Math.floor(sec / 60);   sec %= 60;
+
+  let text = "";
+  if (hh) text += hh + " ч ";
+  if (mm) text += mm + " мин ";
+  text += sec + " сек";
+
+  document.getElementById("countdown").innerHTML = `До открытия: <strong>${text}</strong>`;
+}
+
+setInterval(checkTime, 1000);
+checkTime();
+
+// Автоматическая смена сердечка каждые 5 секунд
+setInterval(() => {
+  const hearts = ["💜","💖","💞","💘","💝","💗","💓","💕"];
+  const heartEl = document.getElementById("heart");
+  if (heartEl) {
+    heartEl.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+  }
+}, 5000);
+</script>
+
+</body>
+</html>      }
     }
   </style>
 </head>
