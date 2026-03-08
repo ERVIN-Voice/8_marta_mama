@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Мамочка, с 8 Марта! ♡</title>
   <style>
     body {
@@ -51,14 +51,15 @@
 
     .flower {
       position: absolute;
-      top: -20vh;
-      font-size: 3rem;
+      top: -25vh;
+      font-size: 3.2rem;
       animation: fall linear infinite forwards;
       opacity: 0;
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
     }
 
     .card {
-      background: rgba(255,254,252,0.92);
+      background: rgba(255,254,252,0.93);
       backdrop-filter: blur(20px);
       border-radius: 36px;
       padding: 50px 35px;
@@ -67,7 +68,7 @@
       max-width: 90%;
       text-align: center;
       transform: scale(0.95);
-      transition: all 0.8s ease-out;
+      transition: transform 0.8s ease-out;
     }
 
     .card:hover { transform: scale(1); }
@@ -95,8 +96,8 @@
     }
 
     @keyframes fall {
-      to { transform: translateY(150vh) rotate(2000deg); opacity: 0; }
-      5% { opacity: 0.9; }
+      to { transform: translateY(160vh) rotate(2200deg); opacity: 0; }
+      4% { opacity: 0.95; }
     }
 
     @keyframes glow {
@@ -116,7 +117,7 @@
 
 <div class="lock" id="lock">
   <div>Открывается в 13:00</div>
-  <div id="countdown" style="margin:1em 0;font-size:1.9rem;"></div>
+  <div id="countdown" style="margin:1em 0; font-size:1.9rem;"></div>
   <div style="font-size:1.25rem; opacity:0.95;">Сейчас <span id="time">--:--</span></div>
 </div>
 
@@ -139,28 +140,44 @@
 </div>
 
 <script>
-const OPEN_H = 13, OPEN_M = 0;
-const FLOWERS = "🌸🌷🌺💐🌹💮🏵️🌻🌼🪻💝".split("");
+const OPEN_H = 13;
+const OPEN_M = 0;
+
+const FLOWERS = [
+  "&#x1F338;", // сакура
+  "&#x1F337;", // тюльпан
+  "&#x1F33A;", // гибискус
+  "&#x1F490;", // букет
+  "&#x1F339;", // роза
+  "&#x1F4AE;", // белый цветок
+  "&#x1F3F5;", // розетка
+  "&#x1F33B;", // подсолнух
+  "&#x1F33C;", // цветок
+  "&#x1FAB7;", // лотос
+  "&#x1F49D;"  // сердце с лентой
+];
 
 function spawnFlower() {
   const el = document.createElement("div");
   el.className = "flower";
-  el.textContent = FLOWERS[Math.random() * FLOWERS.length | 0];
+  el.innerHTML = FLOWERS[Math.floor(Math.random() * FLOWERS.length)];
   el.style.left = Math.random() * 100 + "vw";
-  el.style.fontSize = (2 + Math.random() * 3) + "rem";
-  el.style.animationDuration = (10 + Math.random() * 15) + "s";
-  el.style.animationDelay = Math.random() * 3 + "s";
+  el.style.fontSize = (2.2 + Math.random() * 3) + "rem";
+  el.style.animationDuration = (10 + Math.random() * 16) + "s";
+  el.style.animationDelay = Math.random() * 4 + "s";
   document.getElementById("flowers").appendChild(el);
-  setTimeout(() => el.remove(), 40000);
+  setTimeout(() => el.remove(), 45000);
 }
 
-setInterval(spawnFlower, 500);
+setInterval(spawnFlower, 450);
 
 function checkTime() {
   const now = new Date();
-  const h = now.getHours(), m = now.getMinutes();
+  const h = now.getHours();
+  const m = now.getMinutes();
 
-  document.getElementById("time").textContent = h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+  document.getElementById("time").textContent = 
+    h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
 
   const target = new Date(now);
   target.setHours(OPEN_H, OPEN_M, 0, 0);
@@ -172,9 +189,9 @@ function checkTime() {
     return;
   }
 
-  let sec = diff / 1000 | 0;
-  const hours   = sec / 3600 | 0; sec %= 3600;
-  const minutes = sec / 60   | 0; sec %= 60;
+  let sec = Math.floor(diff / 1000);
+  const hours = Math.floor(sec / 3600);   sec %= 3600;
+  const minutes = Math.floor(sec / 60);   sec %= 60;
 
   let text = "";
   if (hours)   text += hours   + " ч ";
@@ -187,12 +204,13 @@ function checkTime() {
 setInterval(checkTime, 1000);
 checkTime();
 
-document.getElementById("heart").onclick = e => {
-  const hearts = "💖💞💘💝💗💓💕";
-  e.target.textContent = hearts[Math.random() * hearts.length | 0];
+document.getElementById("heart").onclick = function(e) {
+  const hearts = ["💖","💞","💘","💝","💗","💓","💕"];
+  e.target.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
   e.target.style.transform = "scale(1.8) rotate(15deg)";
   setTimeout(() => e.target.style.transform = "", 500);
 };
 </script>
+
 </body>
 </html>
